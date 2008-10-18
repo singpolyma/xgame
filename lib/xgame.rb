@@ -78,8 +78,6 @@ module Rubygame
 				@velocity[:down] += value[1] if value[1] > 0 and (!value[2][:down] or @velocity[:down] < value[2][:down])
 			end
 
-			private
-
 			def self.included(base)
 				base.class_eval {alias_method :update_no_moving, :update; alias_method :update, :update_moving}
 			end
@@ -121,8 +119,6 @@ module Rubygame
 				super
 				@bounds = Rubygame::Screen.get_surface().make_rect() # Sprites implementing this module can override this to set the rect for the bounding box
 			end
-
-			private
 
 			def self.included(base)
 				base.class_eval {alias_method :update_no_bounded, :update; alias_method :update, :update_bounded}
