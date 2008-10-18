@@ -212,6 +212,7 @@ module Rubygame
 			def initialize(x,y,image)
 				super()
 				@image = Rubygame::Surface[image]
+				throw "Image #{image} failed to load. Looking in: #{Rubygame::Surface.autoload_dirs.join(":")}" unless @image
 				@rect = Rubygame::Rect.new(x,y,*@image.size)
 				@updaters = [] unless @updaters
 			end
