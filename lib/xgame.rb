@@ -27,10 +27,6 @@ module Rubygame
 				@time = 40 # Used to store frametime for internal calculations
 			end
 
-			def self.included(base)
-				base.class_eval {alias_method :update_no_moving, :update; alias_method :update, :update_moving}
-			end
-
 			def velocity
 				[@velocity[:left]*-1 + @velocity[:right], @velocity[:up]*-1 + @velocity[:down]]
 			end
@@ -82,7 +78,12 @@ module Rubygame
 				@velocity[:down] += value[1] if value[1] > 0 and (!value[2][:down] or @velocity[:down] < value[2][:down])
 			end
 
-			# Sprites implementing this module must call this from their update method, or by iterating @updaters
+			private
+
+			def self.included(base)
+				base.class_eval {alias_method :update_no_moving, :update; alias_method :update, :update_moving}
+			end
+
 			def update_moving(time)
 				update_no_moving(time)
 				@time = time
@@ -121,11 +122,12 @@ module Rubygame
 				@bounds = Rubygame::Screen.get_surface().make_rect() # Sprites implementing this module can override this to set the rect for the bounding box
 			end
 
+			private
+
 			def self.included(base)
 				base.class_eval {alias_method :update_no_bounded, :update; alias_method :update, :update_bounded}
 			end
 
-			# Sprites implementing this module must call this from their update method, or by iterating @updaters
 			def update_bounded(time)
 				update_no_bounded(time)
 				if @rect.top < @bounds.top
@@ -205,7 +207,7 @@ module Rubygame
 			end
 		end
 
-		# This is a basic class for sprites with updaters (add mixins with .extend)
+		# This is a basic class for updatable, image-based, sprites with a rectangular box matching their image
 		class BasicSprite
 			include Rubygame::Sprites::Sprite
 		  
@@ -214,7 +216,6 @@ module Rubygame
 				@image = Rubygame::Surface[image]
 				throw "Image #{image} failed to load. Looking in: #{Rubygame::Surface.autoload_dirs.join(":")}" unless @image
 				@rect = Rubygame::Rect.new(x,y,*@image.size)
-				@updaters = [] unless @updaters
 			end
 
 			def update(time); end
@@ -225,8 +226,7 @@ module Rubygame
 
 end # module Rubygame
 
-####
-
+# This method is the heart of XGame. Call it with a block that sets up your program.
 def XGame(title = 'XGame', size = [640, 480], framerate = 40, ignore_events = [], &block)
 
 	Rubygame.init() # Set stuff up
