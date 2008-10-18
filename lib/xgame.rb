@@ -223,9 +223,17 @@ module Rubygame
 end # module Rubygame
 
 # This method is the heart of XGame. Call it with a block that sets up your program.
-def XGame(title = 'XGame', size = [640, 480], framerate = 40, ignore_events = [], &block)
+def XGame(title = 'XGame', size = [], framerate = 40, ignore_events = [], &block)
 
 	Rubygame.init() # Set stuff up
+
+	if Rubygame::Screen.respond_to?(:get_resolution)
+		size[0] = Rubygame::Screen.get_resolution[0] unless size[0]
+		size[1] = Rubygame::Screen.get_resolution[1] unless size[1]
+	else
+		size[0] = 640 unless size[0]
+		size[1] = 480 unless size[1]
+	end
 
 	# The events queue gets filled up with all user input into our window
 	events = Rubygame::EventQueue.new()

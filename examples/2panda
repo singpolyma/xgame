@@ -2,7 +2,7 @@
 
 require File.dirname(__FILE__) + '/../lib/xgame'
 
-XGame('The Panda', [800,600], 60) { |screen, background, world, callbacks|
+XGame('The Panda') { |screen, background, world, callbacks|
 
 	class Panda < Rubygame::Sprites::BasicSprite
 		include Rubygame::Sprites::MovingSprite
@@ -33,10 +33,10 @@ XGame('The Panda', [800,600], 60) { |screen, background, world, callbacks|
 		end
 	end
 
-	panda = Panda.new(10,600,'panda.png')
-	panda2 = Panda.new(200,600,'panda.png')
-	platform = Platform.new(100, 520, 'platform.png')
-	platform2 = Platform.new(150, 400, 'platform.png')
+	panda = Panda.new(10,screen.height,'panda.png')
+	panda2 = Panda.new(200,screen.height,'panda.png')
+	platform = Platform.new(100, screen.height-100, 'platform.png')
+	platform2 = Platform.new(150, screen.height-150, 'platform.png')
 	platform2.set_move([150,400],[400,400],[1,0])
 	world.force = [0,1,{:down => 4}] # Gravity. Force of 1 down that may not take velocity above 4
 	world.extend(Rubygame::Sprites::CollideGroup) # Make everything in the world collide
