@@ -228,8 +228,6 @@ end # module Rubygame
 
 def XGame(title = 'XGame', size = [640, 480], framerate = 40, ignore_events = [], &block)
 
-p Rubygame::Screen.zoom_size([1,1],[1,1])
-
 	Rubygame.init() # Set stuff up
 
 	# The events queue gets filled up with all user input into our window
@@ -241,7 +239,7 @@ p Rubygame::Screen.zoom_size([1,1],[1,1])
 	clock.target_framerate = framerate # Let's aim to render at some framerate
 
 	# Set up autoloading for Surfaces. Surfaces will be loaded automatically the first time you use Surface["filename"].
-	Rubygame::Surface.autoload_dirs = [ File.dirname(__FILE__) ] # XXX: this should include other paths depending on the platform
+	Rubygame::Surface.autoload_dirs = [ File.dirname($0) ] # XXX: this should include other paths depending on the platform
 
 	# Create a world for sprites to live in
 	world = Rubygame::Sprites::Group.new
