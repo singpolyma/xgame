@@ -10,10 +10,10 @@ Gem::Specification.new do |s|
   s.authors  = ['Stephen Paul Weber']
   s.files    = ["README", 
 		"TODO", 
-		"LICENSE", 
+		"COPYING", 
 		"xgame.gemspec", 
 		"lib/xgame.rb"] 
-  s.extra_rdoc_files = ["README", "LICENSE", "TODO"]
+  s.extra_rdoc_files = ["README", "COPYING", "TODO"]
   s.add_dependency("rubygame", ["> 0.0.0"])
 end
 
