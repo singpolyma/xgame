@@ -166,7 +166,7 @@ module Rubygame
 		module BoundedGroup
 
 			# Bounding box (of type Rubygame::Rect)
-			attr_accessor :bounds
+			attr_writer :bounds
 			def bounds
 				@bounds ||= Rubygame::Screen.get_surface().make_rect()
 			end
