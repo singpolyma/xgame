@@ -1,2 +1,2 @@
 * Scrollable background
-* EventListeners is likely made useless by Rubygame::EventHandler in 2.4.0
+* EventListeners needs to wrap the new event stuff in rubygame2.4 -- the rubygame stuff is ugly raw though
