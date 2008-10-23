@@ -1,19 +1,28 @@
 #!/usr/bin/env ruby
 
-require File.dirname(__FILE__) + '/../lib/xgame'
+$LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
+require 'xgame'
 
-XGame('The Panda', [800,600], 70) { |screen, background, world, callbacks|
+XGame.run('The Panda') { |screen, background, world, listeners|
 
+	# Generally we define a simple extension of BasicSprite
 	class Panda < Rubygame::Sprites::BasicSprite
 		include Rubygame::Sprites::MovingSprite
-		include Rubygame::Sprites::BoundedSprite
 	end
 
+	# Create a sprite and push it into the world
 	panda = Panda.new(10,800,'panda.png')
-	world.force = [0,1,{:down => 4}] # Gravity. Force of 1 down that may not take velocity above 4
-	world << panda
+	world.push panda
 
-	callbacks[Rubygame::KeyDownEvent] = lambda { |event|
+	# Set up the world
+	world.extend(Rubygame::Sprites::UpdateGroup) # The world should ask sprites to update every frame
+	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
+	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
+	world.force = [0,2.5,{:down => 5}] # Gravity. Force of 2.5 down that may not take velocity above 5
+
+	# Set up event listeners
+
+	listeners.addEventListener(Rubygame::KeyDownEvent) { |event|
 			case event.key
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
@@ -22,11 +31,11 @@ XGame('The Panda', [800,600], 70) { |screen, background, world, callbacks|
 				when Rubygame::K_LEFT
 					panda.go([-1,nil])
 				when Rubygame::K_UP
-					panda.go([nil,-2])
+					panda.go([nil,-3])
 			end
 	}
 
-	callbacks[Rubygame::KeyUpEvent] = lambda { |event|
+	listeners.addEventListener(Rubygame::KeyUpEvent) { |event|
 			case event.key
 				when Rubygame::K_RIGHT
 					panda.stop(:right)
