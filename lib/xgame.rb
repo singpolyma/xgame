@@ -316,13 +316,13 @@ class XGame
 
 		Rubygame.init() # Set stuff up
 
-#		if Rubygame::Screen.respond_to?(:get_resolution)
-#			size[0] = Rubygame::Screen.get_resolution[0] unless size[0]
-#			size[1] = Rubygame::Screen.get_resolution[1] unless size[1]
-#		else
+		if Rubygame::Screen.respond_to?(:get_resolution)
+			size[0] = Rubygame::Screen.get_resolution[0] unless size[0]
+			size[1] = Rubygame::Screen.get_resolution[1] unless size[1]
+		else
 			size[0] = 640 unless size[0]
 			size[1] = 480 unless size[1]
-#		end
+		end
 
 		# The events queue gets filled up with all user input into our window
 		events = Rubygame::EventQueue.new()
