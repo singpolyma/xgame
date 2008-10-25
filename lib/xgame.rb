@@ -238,7 +238,7 @@ module Rubygame
 							@sprite2_edges = {:top => true, :bottom => true, :left => true, :right => true}
 							@sprite2_edges = sprite2.edges if sprite2.respond_to?(:edges)
 							d = sprite2.rect.top - sprite.rect.bottom
-							if d < 0 and d > -5 and @sprite2_edges[:top] # Sprite is on top
+							if d < 0 and d > -15 and @sprite2_edges[:top] # Sprite is on top
 								if !sprite.respond_to?(:moving?) or sprite.moving?:down
 									sprite2.hit([nil,sprite.velocity[1]], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
 									sprite.rect.bottom += d if (!sprite.respond_to?(:edges) or sprite.edges[:bottom])
@@ -246,7 +246,7 @@ module Rubygame
 								end
 							end
 							d = sprite.rect.top - sprite2.rect.bottom
-							if d < 0 and d > -5 and @sprite2_edges[:bottom] # Sprite is on bottom
+							if d < 0 and d > -15 and @sprite2_edges[:bottom] # Sprite is on bottom
 								if !sprite.respond_to?(:moving?) or sprite.moving?:up
 									sprite2.hit([nil,sprite.velocity[1]], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
 									sprite.rect.top += d if !sprite.respond_to?(:edges) or sprite.edges[:top]
@@ -254,7 +254,7 @@ module Rubygame
 								end
 							end
 							d = sprite2.rect.left - sprite.rect.right
-							if d < 0 and d > -5 and @sprite2_edges[:left] # Sprite is on left
+							if d < 0 and d > -15 and @sprite2_edges[:left] # Sprite is on left
 								if !sprite.respond_to?(:moving?) or sprite.moving?:right
 									sprite2.hit([sprite.velocity[0],nil], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
 									sprite.rect.right += d if !sprite.respond_to?(:edges) or sprite.edges[:right]
@@ -262,7 +262,7 @@ module Rubygame
 								end
 							end
 							d = sprite.rect.left - sprite2.rect.right
-							if d < 0 and d > -5 and @sprite2_edges[:right] # Sprite is on right
+							if d < 0 and d > -15 and @sprite2_edges[:right] # Sprite is on right
 								if !sprite.respond_to?(:moving?) or sprite.moving?:left
 									sprite2.hit([sprite.velocity[0],nil], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
 									sprite.rect.left += d if (!sprite.respond_to?(:edges) or sprite.edges[:left])
