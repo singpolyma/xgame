@@ -18,7 +18,8 @@ XGame.run('The Panda') { |screen, background, world, listeners|
 	world.extend(Rubygame::Sprites::UpdateGroup) # The world should ask sprites to update every frame
 	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
 	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
-	world.force = [0,2.5,{:down => 5}] # Gravity. Force of 2.5 down that may not take velocity above 5
+	world.force = [0,150]
+	world.max_force = {:down => 250}
 
 	# Set up event listeners
 
@@ -27,11 +28,13 @@ XGame.run('The Panda') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([1,nil])
+					panda.go([50,nil])
 				when Rubygame::K_LEFT
-					panda.go([-1,nil])
+					panda.go([-50,nil])
 				when Rubygame::K_UP
-					panda.go([nil,-3])
+					panda.go([nil,-150])
+				when Rubygame::K_DOWN
+					panda.go([nil,150])
 			end
 	}
 
@@ -43,6 +46,8 @@ XGame.run('The Panda') { |screen, background, world, listeners|
 					panda.stop(:left)
 				when Rubygame::K_UP
 					panda.stop(:up)
+				when Rubygame::K_DOWN
+					panda.stop(:down)
 			end
 	}
 

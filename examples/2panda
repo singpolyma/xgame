@@ -35,8 +35,8 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 				x, y = @rect.center
 				@v[0] *= -1 if x > @e[0] or x < @s[0]
 				@v[1] *= -1 if y > @e[1] or y < @s[1]
-				@rect.centerx = x + 50 * @v[0] * time/1000.0
-				@rect.centery = y + 50 * @v[1] * time/1000.0
+				@rect.centerx = x + @v[0] * time/1000.0
+				@rect.centery = y + @v[1] * time/1000.0
 			end
 		end
 
@@ -48,7 +48,7 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 	panda2 = Panda.new(200,screen.height)
 
 	platform = Platform.new(100, screen.height-panda.rect.height*1.2)
-	platform2 = Platform.new(150, screen.height-panda.rect.height*1.2*2, [150,400],[400,400],[1,0])
+	platform2 = Platform.new(150, screen.height-panda.rect.height*1.2*2, [150,400],[400,400],[50,0])
 
 	world.push panda, panda2, platform, platform2
 
@@ -57,7 +57,8 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 	world.extend(Rubygame::Sprites::UpdateGroup) # The world should ask sprites to update every frame
 	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
 	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
-	world.force = [0,2.5,{:down => 4}] # Gravity. Force of 2.5 down that may not take velocity above 5
+	world.force = [0,150]
+	world.max_force = {:down => 250}
 
 	# Set up event listeners
 
@@ -66,17 +67,17 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([1,nil])
+					panda.go([50,nil])
 				when Rubygame::K_LEFT
-					panda.go([-1,nil])
+					panda.go([-50,nil])
 				when Rubygame::K_UP
-					panda.go([nil,-2.5])
+					panda.go([nil,-150])
 				when Rubygame::K_D
-					panda2.go([1,nil])
+					panda2.go([50,nil])
 				when Rubygame::K_A
-					panda2.go([-1,nil])
+					panda2.go([-50,nil])
 				when Rubygame::K_W # This does not work right on my Dvorak keyboard. GNOME shift+shift is not respected. Needs configurable.
-					panda2.go([nil,-2.5])
+					panda2.go([nil,-150])
 			end
 	}
 
