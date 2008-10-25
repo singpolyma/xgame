@@ -3,6 +3,8 @@
 # All velocities in unmodified pixels / millisecond
 # All masses in modifier (velocity / mass = speed)
 
+# NOTE: If more vector-like manipulations are wanted anyway, Ftors can be dropped in for any [x,y] array
+
 begin
 	require 'rubygame'
 
