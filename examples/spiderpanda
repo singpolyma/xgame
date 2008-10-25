@@ -11,14 +11,31 @@ XGame.run('Spider Panda') { |screen, background, world, listeners|
 
 		attr_accessor :world
 
+		def initialize(*args)
+			super
+			@orig = @image
+		end
+
 		def fullstop(direction, duration=0)
 			super
 			@force = [0,0]
-			world.force = [-100, 0] if direction == :left
-			world.force = [100, 0] if direction == :right
-			world.force = [0, -100] if direction == :up
-			world.force = [0, 100] if direction == :down
-puts @image.methods.sort.join("\n")
+			if direction == :left
+				world.force = [-100, 0]
+				@image = @orig.rotozoom(-90,1)
+			end
+			if direction == :right
+				world.force = [100, 0]
+				@image = @orig.rotozoom(90,1)
+			end
+			if direction == :up
+				world.force = [0, -100]
+				@image = @orig.rotozoom(180,1)
+			end
+			if direction == :down
+				world.force = [0, 100]
+				@image = @orig
+			end
+			@rect = Rubygame::Rect.new(@rect.x,@rect.y,*@image.size)
 		end
 
 	end
