@@ -13,7 +13,6 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 
 	# Define an EdgeSprite with a default image, some animation logic, and a moving frame of reference
 	class Platform < Rubygame::Sprites::BasicSprite
-		include Rubygame::Sprites::EdgeSprite
 
 		def default_image; Rubygame::Surface['platform.png']; end;
 
@@ -54,7 +53,6 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 
 	# Set up the world
 	world.extend(Rubygame::Sprites::CollideGroup) # Make everything in the world collide
-	world.extend(Rubygame::Sprites::UpdateGroup) # The world should ask sprites to update every frame
 	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
 	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
 	world.force = [0,150]

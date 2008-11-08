@@ -15,7 +15,6 @@ XGame.run('The Panda') { |screen, background, world, listeners|
 	world.push panda
 
 	# Set up the world
-	world.extend(Rubygame::Sprites::UpdateGroup) # The world should ask sprites to update every frame
 	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
 	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
 	world.force = [0,150]

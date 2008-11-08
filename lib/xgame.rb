@@ -10,7 +10,7 @@ begin
 
 	# If we are operating without rubygems (preferred) some features are still nice
 	# define the Gem class to keep a standard API
-	class Gem
+	module Gem
 		@@user_home = '/'
 		def self.user_home
 			@@user_home ||= find_home
@@ -169,11 +169,6 @@ module Rubygame
 
 		end # module MovingSprite
 
-		# This is a mixin module to allow a sprite to let things pass through some edges
-		module EdgeSprite
-			attr_accessor :edges
-		end
-
 		# This is a mixin module for groups that keep their sprites in a particular region of the screen
 		module BoundedGroup
 
@@ -232,47 +227,49 @@ module Rubygame
 
 			def update(*args)
 				super(*args)
-				self.each { |sprite|
-					self.each { |sprite2|
-						if sprite != sprite2 and sprite.respond_to?(:fullstop) and sprite.collide_sprite?sprite2
-							@sprite2_edges = {:top => true, :bottom => true, :left => true, :right => true}
-							@sprite2_edges = sprite2.edges if sprite2.respond_to?(:edges)
-							d = sprite2.rect.top - sprite.rect.bottom
-							if d < 0 and d > -15 and @sprite2_edges[:top] # Sprite is on top
-								if !sprite.respond_to?(:moving?) or sprite.moving?:down
-									sprite2.hit([nil,sprite.velocity[1]], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
-									sprite.rect.bottom += d if (!sprite.respond_to?(:edges) or sprite.edges[:bottom])
-									sprite.fullstop(:down, 200/args[0])
-								end
-							end
-							d = sprite.rect.top - sprite2.rect.bottom
-							if d < 0 and d > -15 and @sprite2_edges[:bottom] # Sprite is on bottom
-								if !sprite.respond_to?(:moving?) or sprite.moving?:up
-									sprite2.hit([nil,sprite.velocity[1]], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
-									sprite.rect.top += d if !sprite.respond_to?(:edges) or sprite.edges[:top]
-									sprite.fullstop(:up, 200/args[0])
-								end
-							end
-							d = sprite2.rect.left - sprite.rect.right
-							if d < 0 and d > -15 and @sprite2_edges[:left] # Sprite is on left
-								if !sprite.respond_to?(:moving?) or sprite.moving?:right
-									sprite2.hit([sprite.velocity[0],nil], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
-									sprite.rect.right += d if !sprite.respond_to?(:edges) or sprite.edges[:right]
-									sprite.fullstop(:right, 200/args[0])
-								end
-							end
-							d = sprite.rect.left - sprite2.rect.right
-							if d < 0 and d > -15 and @sprite2_edges[:right] # Sprite is on right
-								if !sprite.respond_to?(:moving?) or sprite.moving?:left
-									sprite2.hit([sprite.velocity[0],nil], sprite) if sprite2.respond_to?(:hit) and sprite.respond_to?(:velocity)
-									sprite.rect.left += d if (!sprite.respond_to?(:edges) or sprite.edges[:left])
-									sprite.fullstop(:left, 200/args[0])
-								end
+				self.each do |by|
+					next unless by.respond_to?:fullstop
+					self.each do |to|
+						next if by == to or !by.collide_sprite?(to)
+						d = to.rect.top - by.rect.bottom
+						if d < 0 and d > -15 and to.edges[:top] and by.moving?:down # Sprite is on top
+							to.hit([nil,by.velocity[1]], by) if to.respond_to?(:hit) and by.respond_to?(:velocity)
+							by.rect.bottom += d if (!by.respond_to?(:edges) or by.edges[:bottom])
+							by.fullstop(:down, 200/args[0])
+						else # can only collide on bottom OR top, never both
+							d = by.rect.top - to.rect.bottom
+							if d < 0 and d > -15 and to.edges[:bottom] and by.moving?:up # Sprite is on bottom
+								to.hit([nil,by.velocity[1]], by) if to.respond_to?(:hit) and by.respond_to?(:velocity)
+								by.rect.top += d if !by.respond_to?(:edges) or by.edges[:top]
+								by.fullstop(:up, 200/args[0])
 							end
 						end
-					}
-				}
+						d = to.rect.left - by.rect.right
+						if d < 0 and d > -15 and to.edges[:left] and by.moving?:right # Sprite is on left
+							to.hit([by.velocity[0],nil], by) if to.respond_to?(:hit) and by.respond_to?(:velocity)
+							by.rect.right += d if !by.respond_to?(:edges) or by.edges[:right]
+							by.fullstop(:right, 200/args[0])
+						else # can only collide on left OR right, never both
+							d = by.rect.left - to.rect.right
+							if d < 0 and d > -15 and to.edges[:right] and by.moving?:left # Sprite is on right
+								to.hit([by.velocity[0],nil], by) if to.respond_to?(:hit) and by.respond_to?(:velocity)
+								by.rect.left += d if (!by.respond_to?(:edges) or by.edges[:left])
+								by.fullstop(:left, 200/args[0])
+							end
+						end
+					end # each to
+				end # each by
 			end
+		end # module CollideGroup
+
+		module Sprite 
+			# XXX: It might be good to add default values for this, but there's no clear inheritance with mixins, poo
+			attr_accessor :edges
+
+			def moving?(direction)
+				false # We're not a moving sprite
+			end
+
 		end
 
 		# This is a basic class for updatable, image-based, sprites with a rectangular box matching their image
@@ -288,11 +285,13 @@ module Rubygame
 				super()
 				if image
 					@image = Rubygame::Surface[image]
-					throw "Image #{image} failed to load. Looking in: #{Rubygame::Surface.autoload_dirs.join(":")}" unless @image
+					raise "Image #{image} failed to load. Looking in: #{Rubygame::Surface.autoload_dirs.join(":")}" unless @image
 				else
 					@image = default_image
+					raise "No image to load. No default image, no image specified." unless @image
 				end
 				@rect = Rubygame::Rect.new(x,y,*@image.size)
+				@edges = {:top => true, :bottom => true, :left => true, :right => true}
 			end
 
 			def update(time); end
@@ -339,6 +338,7 @@ class XGame
 
 		# Create a world for sprites to live in
 		world = Rubygame::Sprites::Group.new
+		world.extend(Rubygame::Sprites::UpdateGroup) # The world can undraw and draw its Sprites
 		world.extend(Rubygame::Sprites::DepthSortGroup) # Let them get in front of each other
 
 		# Grab the screen and create a background
@@ -355,6 +355,7 @@ class XGame
 		# to refresh only the parts of the screen that have changed.
 		screen.update()
 
+		sleep_hack = frametime/1000.0 # cache this value, so we're not doing floating point division repeatedly
 		catch(:quit) do
 			loop do
 				events.push Rubygame::LoopEvent.new
@@ -373,6 +374,7 @@ class XGame
 				end
 
 				world.undraw(screen, background)
+				sleep sleep_hack # HACK: clock.tick seems to suck CPU
 				@@frametime = clock.tick
 				world.update(@@frametime)
 				screen.update_rects(world.draw(screen))
