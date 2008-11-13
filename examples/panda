@@ -3,22 +3,19 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
 
-XGame.run('The Panda') { |screen, background, world, listeners|
-
-	# Generally we define a simple extension of BasicSprite
-	class Panda < Rubygame::Sprites::BasicSprite
-		include Rubygame::Sprites::MovingSprite
-	end
-
-	# Create a sprite and push it into the world
-	panda = Panda.new(10,800,'panda.png')
-	world.push panda
+XGame('The Panda') { |screen, background, world, listeners|
 
 	# Set up the world
-	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
-	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
-	world.force = [0,150]
-	world.max_force = {:down => 250}
+	world.extend(Rubygame::Sprites::ChipmunkPhysicsSpaceGroup) # The world has physics
+	world.bound(screen, [:top, :bottom, :left, :right]) # Keep sprites on the screen
+	world.damping = 0.5 # Set up basic air resistance
+	world.gravity = 100 # Set a gravity constant
+
+	# Create a sprite and push it into the world
+	# It's important to have the world set up *before* you do this
+	# This sprite will have a mass of 5 and infinite angular resistance (it does not rotate)
+	panda = Rubygame::Sprites::ChipmunkPhysicsSprite.new(10, screen.height-60, 5, CP::INFINITY, 'panda.png')
+	world.push panda
 
 	# Set up event listeners
 
@@ -27,13 +24,11 @@ XGame.run('The Panda') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([50,nil])
+					panda.go([10,nil])
 				when Rubygame::K_LEFT
-					panda.go([-50,nil])
+					panda.go([-10,nil])
 				when Rubygame::K_UP
-					panda.go([nil,-150])
-				when Rubygame::K_DOWN
-					panda.go([nil,150])
+					panda.jump
 			end
 	}
 
@@ -43,10 +38,6 @@ XGame.run('The Panda') { |screen, background, world, listeners|
 					panda.stop(:right)
 				when Rubygame::K_LEFT
 					panda.stop(:left)
-				when Rubygame::K_UP
-					panda.stop(:up)
-				when Rubygame::K_DOWN
-					panda.stop(:down)
 			end
 	}
 

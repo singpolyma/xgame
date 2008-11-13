@@ -1,8 +1,10 @@
-This is a basic demo of XGame, a cross-platform game development library based on RubyGame and SDL.
+This is a basic demo of XGame, a cross-platform game development library based on RubyGame, Chipmunk, and SDL.
 
 To run this demo you must have ruby and the rubygems system installed, then run:
 
 sudo gem install rubygame
+
+You must also install Chipmunk <http://wiki.slembcke.net/main/published/Chipmunk>
 
 to install the rubygame dependency.  You may need to install build tools, ruby headers, and SDL
 libraries/headers in order to install rubygame.  These should be in your software repositories.
@@ -10,3 +12,5 @@ libraries/headers in order to install rubygame.  These should be in your softwar
 To run the demo, just type:
 
 ./panda
+
+"panda.png" copyright (C) 2004 John Croisant licensed under the Creative Commons Attribution-ShareAlike 2.5 License. 

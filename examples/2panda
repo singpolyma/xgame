@@ -3,60 +3,59 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
 
-XGame.run('Two Pandas!') { |screen, background, world, listeners|
+XGame('Two Pandas!') { |screen, background, world, listeners|
 
-	# Define a MovingSprite with a default image
-	class Panda < Rubygame::Sprites::BasicSprite
-		include Rubygame::Sprites::MovingSprite
+	class Panda < Rubygame::Sprites::ChipmunkPhysicsSprite
 		def default_image; Rubygame::Surface['panda.png']; end;
+		def initialize(*args)
+			super
+			@shape.u = 1.0
+		end
 	end
 
 	# Define an EdgeSprite with a default image, some animation logic, and a moving frame of reference
-	class Platform < Rubygame::Sprites::BasicSprite
+	class Platform < Rubygame::Sprites::ChipmunkPhysicsSprite
 
 		def default_image; Rubygame::Surface['platform.png']; end;
 
 		def initialize(x, y, s=nil, e=nil, v=nil)
-			super(x, y)
+			super(x, y, CP::INFINITY, CP::INFINITY)
 			@s = s
 			@e = e
 			@v = v
-			self.edges = {:top => true, :left => true, :right => true, :bottom => false}
+			@shape.u = 1.0
 		end
 
-		# Tell the thing we're hitting about our moving frame of reference
-		def hit(v, by)
-			by.reference = @v if @v and by.respond_to?(:reference=)
-		end
-
+		# TODO: the panda ends up moving faster than the plaform and getting pushed off... not good`
 		def update(time)
+			super
+			@shape.body.update_position(time/1000.0)
 			if @s and @e and @v
-				x, y = @rect.center
+				x = @shape.body.p.x
+				y = @shape.body.p.y
 				@v[0] *= -1 if x > @e[0] or x < @s[0]
 				@v[1] *= -1 if y > @e[1] or y < @s[1]
-				@rect.centerx = x + @v[0] * time/1000.0
-				@rect.centery = y + @v[1] * time/1000.0
+				@shape.body.v = CP::Vec2.new(@v[0], @v[1])
 			end
 		end
 
 	end # Platform
 
+	# Set up the world
+	world.extend(Rubygame::Sprites::ChipmunkPhysicsSpaceGroup) # The world has physics
+	world.bound(screen, [:top, :bottom, :left, :right]) # Keep sprites on the screen
+	world.damping = 0.5 # Set up basic air resistance
+	world.gravity = 100 # Set a gravity constant
+
 	# Instantiate sprites and push them onto the world
 
-	panda = Panda.new(10,screen.height)
-	panda2 = Panda.new(200,screen.height)
+	panda = Panda.new(10, screen.height-70, 5, CP::INFINITY)
+	panda2 = Panda.new(200, screen.height-70, 5, CP::INFINITY)
 
 	platform = Platform.new(100, screen.height-panda.rect.height*1.2)
 	platform2 = Platform.new(150, screen.height-panda.rect.height*1.2*2, [150,400],[400,400],[50,0])
 
 	world.push panda, panda2, platform, platform2
-
-	# Set up the world
-	world.extend(Rubygame::Sprites::CollideGroup) # Make everything in the world collide
-	world.extend(Rubygame::Sprites::ForceGroup) # Let a constant force (likely gravity) be applied to sprites in the world
-	world.extend(Rubygame::Sprites::BoundedGroup) # Keep sprites inside the screen
-	world.force = [0,150]
-	world.max_force = {:down => 250}
 
 	# Set up event listeners
 
@@ -65,17 +64,17 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([50,nil])
+					panda.go([10,nil])
 				when Rubygame::K_LEFT
-					panda.go([-50,nil])
+					panda.go([-10,nil])
 				when Rubygame::K_UP
-					panda.go([nil,-150])
+					panda.jump
 				when Rubygame::K_D
-					panda2.go([50,nil])
+					panda2.go([10,nil])
 				when Rubygame::K_A
-					panda2.go([-50,nil])
+					panda2.go([-10,nil])
 				when Rubygame::K_W # This does not work right on my Dvorak keyboard. GNOME shift+shift is not respected. Needs configurable.
-					panda2.go([nil,-150])
+					panda2.jump
 			end
 	}
 
@@ -85,14 +84,10 @@ XGame.run('Two Pandas!') { |screen, background, world, listeners|
 					panda.stop(:right)
 				when Rubygame::K_LEFT
 					panda.stop(:left)
-				when Rubygame::K_UP
-					panda.stop(:up)
 				when Rubygame::K_D
 					panda2.stop(:right)
 				when Rubygame::K_A
 					panda2.stop(:left)
-				when Rubygame::K_W
-					panda2.stop(:up)
 			end
 	}
 
