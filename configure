@@ -77,12 +77,12 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-XGAME=`ruby -c lib/xgame.rb | grep "Syntax OK"`
+XGAME=`$RUBY -c lib/xgame.rb | grep "Syntax OK"`
 if [ "." = "$XGAME." ]; then
 	echo "ERROR: XGame source tree corrupted" 1>&2
 	exit 1
 else
-	ruby <<EOT
+	$RUBY <<EOT
 require 'lib/xgame'
 if XGame::VERSION.join('.') == '$VERSION'
 	puts "XGame $VERSION present"
@@ -107,7 +107,7 @@ if [ "." != "$GEM." ]; then
 	GEMREMOVE="$GEM uninstall xgame"
 fi
 
-SITEDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir']" | ruby`
+SITEDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir']" | $RUBY`
 
 cat 1>Makefile <<EOT
 all: gem lib/xgame.rb
@@ -124,5 +124,5 @@ uninstall:
 	rm "$SITEDIR/xgame.rb"
 	$GEMREMOVE
 test: all
-	cd tests; ruby -T2 xgame_test.rb; cd ..
+	cd tests; $RUBY -T2 xgame_test.rb; cd ..
 EOT
