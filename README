@@ -10,3 +10,8 @@ You may need to install build tools, ruby headers, and SDL
 libraries/headers in order to install rubygame.  These should be in your software repositories.
 
 You must also install Chipmunk <http://wiki.slembcke.net/main/published/Chipmunk> in your ruby require path.
+
+To install XGame on your system, just run the traditional:
+	./configure
+	make
+	sudo make install
