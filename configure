@@ -1,0 +1,112 @@
+#!/bin/sh
+
+# Verify presence of ruby
+RUBY=`which ruby` # XXX: we're assuming which is in PATH
+if [ "." = "$RUBY." ]; then
+	echo "ERROR: ruby not found" 1>&2
+	exit 1
+else
+	echo "Ruby found at $RUBY"
+fi
+
+# Verify ruby version
+RUBYMAJOR=`$RUBY -v | cut -d' ' -f2 | cut -b1`
+RUBYMINOR=`$RUBY -v | cut -d' ' -f2 | cut -b3`
+if [ $RUBYMAJOR -lt 1 -o $RUBYMINOR -lt 8 ]; then
+	echo "ERROR: ruby version $RUBYMAJOR.$RUBYMINOR.x too low, need at least 1.8.0" 1>&2
+	exit 1
+else
+	echo "Ruby version $RUBYMAJOR.$RUBYMINOR.x"
+fi
+
+# Verify RubyGame and version
+$RUBY <<EOT
+begin
+	begin
+		require 'rubygame'
+	rescue LoadError
+		require 'rubygems'
+		require 'rubygame'
+		warn 'WARNING: RubyGems is required for RubyGame on your system'
+	end
+rescue LoadError
+	warn 'ERROR: RubyGame not found'
+	exit 1
+end
+
+if Rubygame::VERSIONS[:rubygame][0] >= 2 and Rubygame::VERSIONS[:rubygame][1] >= 3
+	puts "Rubygame version #{Rubygame::VERSIONS[:rubygame].join('.')}"
+	exit 0
+else
+	warn "ERROR: Rubygame version #{Rubygame::VERSIONS[:rubygame].join('.')} is too low, need at least 2.3.0"
+	exit 1
+end
+EOT
+if [ $? != 0 ]; then
+	exit 1
+fi
+
+# Verify Chipmunk and version
+$RUBY <<EOT
+begin
+	begin
+		require 'chipmunk'
+	rescue LoadError
+		require 'rubygems'
+		require 'chipmunk'
+		warn 'WARNING: RubyGems is required for Chipmunk on your system'
+	end
+rescue LoadError
+	warn 'ERROR: Chipmunk not found'
+	exit 1
+end
+
+begin
+	CP::Vec2.new(0,0) # try to do something basic, Chipmunk has no good version indicator
+	puts 'Chipmunk found'
+rescue Exception
+	warn 'ERROR: Your version of Chipmunk is no good, must be at least 4.0.0'
+	exit 1
+end
+
+exit 0
+EOT
+if [ $? != 0 ]; then
+	exit 1
+fi
+
+XGAME=`ruby -c lib/xgame.rb | grep "Syntax OK"`
+if [ "." = "$XGAME." ]; then
+	echo "ERROR: XGame source tree corrupted" 1>&2
+	exit 1
+else
+	echo "XGame source tree present"
+fi
+
+GEMBUILD=""
+GEMINSTALL=""
+GEMREMOVE=""
+GEM=`which gem` # XXX: we're assuming which is in PATH
+GEM=""
+if [ "." != "$GEM." ]; then
+	GEMBUILD="$GEM build xgame.gemspec"
+	GEMINSTALL="$GEM install xgame*.gem"
+	GEMREMOVE="$GEM uninstall xgame"
+fi
+
+SITEDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir']" | ruby`
+
+cat 1>Makefile <<EOT
+all: gem lib/xgame.rb
+	$RUBY -c "lib/xgame.rb"
+gem: xgame.gemspec
+	$GEMBUILD
+clean:
+	rm xgame*.gem
+install:
+	cp "lib/xgame.rb" "$SITEDIR/xgame.rb"
+	$GEMINSTALL
+uninstall:
+	rm "$SITEDIR/xgame.rb"
+	$GEMREMOVE
+EOT
