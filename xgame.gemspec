@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name     = "xgame"
   s.version  = "0.1.0" # NOTE: Don't forget to update the configure script and lib/xgame.rb
-  s.date     = "2008-10-18"
+  s.date     = "2008-11-15"
   s.summary  = "High-level game framework based on rubygame and chipmunk"
   s.email    = "singpolyma@singpolyma.net"
   s.homepage = "http://github.com/singpolyma/xgame"
