@@ -1,5 +1,23 @@
 #!/bin/sh
 
+# Parse options
+while [ $# -gt 0 ]; do
+	optarg=`expr "x$1" : 'x[^=]*=\(.*\)'`
+	case "$1" in
+		--prefix=*)
+			PREFIX=$optarg
+			shift
+		;;
+		--packaging)
+			PACKAGING=1
+			shift
+		;;
+		*)
+			shift
+		;;
+	esac
+done
+
 VERSION="0.1.0" # NOTE: Remember to update in XGame::VERSION as well, and xgame.gemspec
 
 # Verify presence of ruby
@@ -97,19 +115,29 @@ EOT
 	fi
 fi
 
+if [ "$PREFIX." = "." -o "$PREFIX" = "/usr/local" ]; then
+	INSTALLDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir'].sub(Regexp.new('^$PREFIX\/?'),'')" | $RUBY`
+else
+	INSTALLDIR=`echo "require 'rbconfig'; puts Config::CONFIG['rubylibdir'].sub(Regexp.new('^$PREFIX\/?'),'')" | $RUBY`
+fi
+
 GEMBUILD=""
 GEMINSTALL=""
 GEMREMOVE=""
 GEM=`which gem` # XXX: we're assuming which is in PATH
 if [ "." != "$GEM." ]; then
 	GEMBUILD="$GEM build xgame.gemspec"
-	GEMINSTALL="$GEM install xgame-$VERSION.gem"
 	GEMREMOVE="$GEM uninstall xgame"
+	if [ "." = "$PACKAGING." ]; then
+		GEMINSTALL="$GEM install xgame-$VERSION.gem"
+	else
+		#GEMINSTALL="cp xgame-$VERSION.gem '\$(prefix)/$INSTALLDIR/xgame.gem'"
+		GEMINSTALL="mkdir -p '\$(prefix)/../tmp/'; cp xgame-$VERSION.gem '\$(prefix)/../tmp/xgame.gem'" # XXX: This assumes prefix is only one level deeper than we want... hmm...
+	fi
 fi
 
-SITEDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir']" | $RUBY`
-
 cat 1>Makefile <<EOT
+prefix=$PREFIX
 all: gem lib/xgame.rb
 	$RUBY -c "lib/xgame.rb"
 xgame-$VERSION.gem: xgame.gemspec
@@ -117,8 +145,11 @@ xgame-$VERSION.gem: xgame.gemspec
 gem: xgame-$VERSION.gem
 clean:
 	rm -f xgame-$VERSION.gem
+distclean: clean
+	rm -f Makefile
 install: all
-	cp "lib/xgame.rb" "$SITEDIR/xgame.rb"
+	mkdir -p "\$(prefix)/$INSTALLDIR/"
+	cp "lib/xgame.rb" "\$(prefix)/$INSTALLDIR/xgame.rb"
 	$GEMINSTALL
 uninstall:
 	rm -f "$SITEDIR/xgame.rb"
