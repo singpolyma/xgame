@@ -116,12 +116,12 @@ xgame-$VERSION.gem: xgame.gemspec
 	$GEMBUILD
 gem: xgame-$VERSION.gem
 clean:
-	rm xgame-$VERSION.gem
-install:
+	rm -f xgame-$VERSION.gem
+install: all
 	cp "lib/xgame.rb" "$SITEDIR/xgame.rb"
 	$GEMINSTALL
 uninstall:
-	rm "$SITEDIR/xgame.rb"
+	rm -f "$SITEDIR/xgame.rb"
 	$GEMREMOVE
 test: all
 	cd tests; $RUBY -T2 xgame_test.rb; cd ..
