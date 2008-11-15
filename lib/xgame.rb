@@ -329,6 +329,11 @@ module Rubygame
 
 end # module Rubygame
 
+module XGame
+	# NOTE: Remember to update this in ./configure as well as xgame.gemspec
+	VERSION = [0,1,0] # MAJOR, MINOR, PATCH
+end
+
 # This method is the heart of XGame. Call it with a block that sets up your program.
 def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block)
 

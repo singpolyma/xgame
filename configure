@@ -1,5 +1,7 @@
 #!/bin/sh
 
+VERSION="0.1.0" # NOTE: Remember to update in XGame::VERSION as well, and xgame.gemspec
+
 # Verify presence of ruby
 RUBY=`which ruby` # XXX: we're assuming which is in PATH
 if [ "." = "$RUBY." ]; then
@@ -80,17 +82,28 @@ if [ "." = "$XGAME." ]; then
 	echo "ERROR: XGame source tree corrupted" 1>&2
 	exit 1
 else
-	echo "XGame source tree present"
+	ruby <<EOT
+require 'lib/xgame'
+if XGame::VERSION.join('.') == '$VERSION'
+	puts "XGame $VERSION present"
+	exit 0
+else
+	warn "ERROR: XGame version #{XGame::VERSION.join('.')} does not match this script $VERSION"
+	exit 1
+end
+EOT
+	if [ $? != 0 ]; then
+		exit 1
+	fi
 fi
 
 GEMBUILD=""
 GEMINSTALL=""
 GEMREMOVE=""
 GEM=`which gem` # XXX: we're assuming which is in PATH
-GEM=""
 if [ "." != "$GEM." ]; then
 	GEMBUILD="$GEM build xgame.gemspec"
-	GEMINSTALL="$GEM install xgame*.gem"
+	GEMINSTALL="$GEM install xgame-$VERSION.gem"
 	GEMREMOVE="$GEM uninstall xgame"
 fi
 
@@ -99,14 +112,17 @@ SITEDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir']" | ruby`
 cat 1>Makefile <<EOT
 all: gem lib/xgame.rb
 	$RUBY -c "lib/xgame.rb"
-gem: xgame.gemspec
+xgame-$VERSION.gem: xgame.gemspec
 	$GEMBUILD
+gem: xgame-$VERSION.gem
 clean:
-	rm xgame*.gem
+	rm xgame-$VERSION.gem
 install:
 	cp "lib/xgame.rb" "$SITEDIR/xgame.rb"
 	$GEMINSTALL
 uninstall:
 	rm "$SITEDIR/xgame.rb"
 	$GEMREMOVE
+test: all
+	cd tests; ruby -T2 xgame_test.rb; cd ..
 EOT
