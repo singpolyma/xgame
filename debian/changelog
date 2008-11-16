@@ -1,0 +1,42 @@
+libxgame-ruby (0.2.0-1) unstable; urgency=low
+
+  * Added current revisions of xgame.rb and the LICENSE file.
+  * Added the basic panda example.
+  * 2panda, slightly more complex example. Also, a nice error message
+    for images not loading.
+  * Updated main README
+  * Added TODO
+  * Add gemspec, clean up comments and permissions
+  * Hmm, update needs to be publc. The versions of it don't, but leaving
+    them the same makes life easier.
+  * Default to pseudo-full-screen
+  * COPYING is the more traditional filename
+  * COPYING is the more traditional filename
+  * XGame class with XGame.framerate
+  * New TODO about overlap with rubygame
+  * TODO note about rubygame2.4 events
+  * Easier to grok numbers for units.
+  * README improved to not force rubygems use.
+  * Accidentally pushed with full-screen commented out
+  * NOTE about ftors
+  * started spiderpanda example (different gravity forces to 'stick' to
+    walls)
+  * Spiderpanda now rotates when hitting the walls.
+  * bigger collide threshold to prevent non-collisions
+  * Collision cleanup
+  * basic test suite
+  * documentation updates
+  * Added a ./configure script
+  * Version numbers in gemspec, xgame, and ./configure, and checks. make
+    test rule also
+  * better friction values in 2panda example
+  * Add note about goofy flying is spiderpanda
+  * note about ./configure in README
+  * Merge branches 'master' and 'chipmunk'
+  * Full roadmap and better description of project
+  * ./configure was using ruby instead of  in a few places
+  * Makefile suggestions from @ossguy
+  * Change date in gemspec
+
+ -- Stephen Paul Weber <singpolyma@singpolyma.net>  Sat, 15 Nov 2008 15:29:31 -0500
+
