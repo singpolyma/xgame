@@ -272,10 +272,10 @@ module Rubygame
 			end
 
 			# Add a sprite to this group
-			def push(*args)
-				super
-				args.each do |sprite|
-					next unless sprite.respond_to?:shape
+			def <<(sprite)
+				unless self.include? sprite
+					super
+					return unless sprite.respond_to?:shape
 					space.add_body sprite.shape.body unless sprite.shape.body.m == CP::INFINITY
 					space.add_shape sprite.shape
 				end
