@@ -94,9 +94,8 @@ module Rubygame
 		end
 
 		def vertices
-			[CP::Vec2::ZERO, CP::Vec2.new(0, height), CP::Vec2.new(width, height), CP::Vec2.new(width, 0)]
-			# Centre of gravity is at 0,0 so the following is more correct, but requires some drawing tweaks
-			# [CP::Vec2.new(width/-2, height/-2), CP::Vec2.new(width/-2, height/2), CP::Vec2.new(width/2, height/2), CP::Vec2.new(width/2, height/-2)]
+			# Centre of gravity is at 0,0 body position translates to centrex, centrey
+			[CP::Vec2.new(width/-2, height/-2), CP::Vec2.new(width/-2, height/2), CP::Vec2.new(width/2, height/2), CP::Vec2.new(width/2, height/-2)]
 		end
 	end # end Rect
 
@@ -158,7 +157,8 @@ module Rubygame
 				moment = CP::moment_for_poly(mass, @rect.vertices, CP::Vec2::ZERO) unless moment
 				body = CP::Body.new(mass, moment)
 				@shape = @rect.shape_for(body)
-				body.p = CP::Vec2.new(rect.x, rect.y)
+				@shape.u = 1.0 # Need some default friction value
+				body.p = CP::Vec2.new(rect.centerx, rect.centery)
 				@going = { :left => 0, :right => 0, :up => 0, :down =>0 }
 				@jumps = 0
 			end
@@ -185,11 +185,13 @@ module Rubygame
 					@going[:up] = v[1]*-1 if v[1] <= 0
 					@going[:down] = v[1] if v[1] >= 0
 				end
+				@shape.surface_v = CP::Vec2.new(@going[:left] + @going[:right]*-1, @going[:up] + @going[:down]*-1)
 			end
 
 			# Stop some component of motion
 			def stop(direction)
 				@going[direction] = 0
+				@shape.surface_v = CP::Vec2.new(@going[:left] + @going[:right]*-1, @going[:up] + @going[:down]*-1)
 			end
 
 			# Apply a constant force along a certain vector
@@ -230,11 +232,10 @@ module Rubygame
 			def update(time)
 				super
 				reset_jumps if velocity.y.abs < 1 # XXX: velocity.y == 0 at the exact peak of a jump. not a huge problem in practice?
-				apply_impulse(CP::Vec2.new(@going[:left]*-1 + @going[:right], @going[:up]*-1 + @going[:down]))
 
 				#@image = @image.rotozoom(@shape.body.a, 1)
-				rect.x = @shape.body.p.x
-				rect.y = @shape.body.p.y
+				rect.centerx = @shape.body.p.x
+				rect.centery = @shape.body.p.y
 			end
 
 		end # ChipmunkPhysicsSprite
@@ -302,7 +303,7 @@ module Rubygame
 						raise ArgumentError.new("Invalid side to bound #{side}")
 				end
 				side_shape.collision_type = :wall
-				side_shape.u = 0.1
+				side_shape.u = 1.0
 				space.add_static_shape side_shape
 			end
 

@@ -24,9 +24,9 @@ XGame('The Panda') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([10,nil])
+					panda.go([30,nil])
 				when Rubygame::K_LEFT
-					panda.go([-10,nil])
+					panda.go([-30,nil])
 				when Rubygame::K_UP
 					panda.jump
 			end

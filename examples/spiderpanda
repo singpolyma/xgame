@@ -3,6 +3,8 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
 
+# TODO: This example needs a lot of work to bring it in line with our use of a real physics engine
+
 XGame('Spider Panda') { |screen, background, world, listeners|
 
 	# Generally we define a simple extension of BasicSprite
@@ -64,13 +66,14 @@ XGame('Spider Panda') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([20,nil])
+					panda.go([50,nil])
 				when Rubygame::K_LEFT
-					panda.go([-20,nil])
+					panda.go([-50,nil])
 				when Rubygame::K_UP
-					panda.go([nil,-20]) # Research rotating the jumps instead of just letting the panda fly
+					panda.jump
+					#panda.go([nil,-50]) # Research rotating the jumps instead of just letting the panda fly
 				when Rubygame::K_DOWN
-					panda.go([nil,20])
+					panda.go([nil,50])
 			end
 	}
 

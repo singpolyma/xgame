@@ -7,10 +7,6 @@ XGame('Two Pandas!') { |screen, background, world, listeners|
 
 	class Panda < Rubygame::Sprites::ChipmunkPhysicsSprite
 		def default_image; Rubygame::Surface['panda.png']; end;
-		def initialize(*args)
-			super
-			@shape.u = 0.5
-		end
 	end
 
 	# Define an EdgeSprite with a default image, some animation logic, and a moving frame of reference
@@ -23,7 +19,6 @@ XGame('Two Pandas!') { |screen, background, world, listeners|
 			@s = s
 			@e = e
 			@v = v
-			@shape.u = 0.5
 		end
 
 		# TODO: the panda ends up moving faster than the plaform and getting pushed off... not good`
@@ -64,15 +59,15 @@ XGame('Two Pandas!') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.go([10,nil])
+					panda.go([30,nil])
 				when Rubygame::K_LEFT
-					panda.go([-10,nil])
+					panda.go([-30,nil])
 				when Rubygame::K_UP
 					panda.jump
 				when Rubygame::K_D
-					panda2.go([10,nil])
+					panda2.go([30,nil])
 				when Rubygame::K_A
-					panda2.go([-10,nil])
+					panda2.go([-30,nil])
 				when Rubygame::K_W # This does not work right on my Dvorak keyboard. GNOME shift+shift is not respected. Needs configurable.
 					panda2.jump
 			end
