@@ -9,7 +9,6 @@ XGame('Two Pandas!') { |screen, background, world, listeners|
 		def default_image; Rubygame::Surface['panda.png']; end;
 	end
 
-	# Define an EdgeSprite with a default image, some animation logic, and a moving frame of reference
 	class Platform < Rubygame::Sprites::ChipmunkPhysicsSprite
 
 		def default_image; Rubygame::Surface['platform.png']; end;
@@ -19,9 +18,9 @@ XGame('Two Pandas!') { |screen, background, world, listeners|
 			@s = s
 			@e = e
 			@v = v
+			@shape.collision_type = :wall
 		end
 
-		# TODO: the panda ends up moving faster than the plaform and getting pushed off... not good`
 		def update(time)
 			super
 			@shape.body.update_position(time/1000.0)

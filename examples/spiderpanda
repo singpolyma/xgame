@@ -3,15 +3,13 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
 
-# TODO: This example needs a lot of work to bring it in line with our use of a real physics engine
-
 XGame('Spider Panda') { |screen, background, world, listeners|
 
-	# Generally we define a simple extension of BasicSprite
 	class Panda < Rubygame::Sprites::ChipmunkPhysicsSprite
 
 		def initialize(*args)
 			super
+			@shape.collision_type = :panda
 			@orig = @image
 		end
 
@@ -45,7 +43,8 @@ XGame('Spider Panda') { |screen, background, world, listeners|
 
 	# Set up event listeners
 
-	listeners.addEventListener(Rubygame::CollisionEvent.new(nil, :wall)) { |by, to|
+	listeners.addEventListener(Rubygame::CollisionEvent.new(:panda, :wall)) { |by, to|
+		by.reset_jumps # Must reset jumps since we've changed the panda's collision type
 		if to.bb.t == screen.height and to.bb.b == screen.height
 			world.gravity = [0,100]
 			panda.r :down
@@ -66,13 +65,16 @@ XGame('Spider Panda') { |screen, background, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
+					panda.jump(world.gravity * -10) if world.gravity.x == -100
 					panda.go([50,nil])
 				when Rubygame::K_LEFT
+					panda.jump(world.gravity * -10) if world.gravity.x == 100
 					panda.go([-50,nil])
 				when Rubygame::K_UP
-					panda.jump
-					#panda.go([nil,-50]) # Research rotating the jumps instead of just letting the panda fly
+					panda.jump(world.gravity * -10) if world.gravity.y == 100
+					panda.go([nil,-50])
 				when Rubygame::K_DOWN
+					panda.jump(world.gravity * -10) if world.gravity.y == -100
 					panda.go([nil,50])
 			end
 	}

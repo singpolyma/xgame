@@ -43,6 +43,10 @@ end
 module CP
 	INFINITY = 1.0/0.0
 
+	module Shape
+		attr_accessor :sprite
+	end
+
 	class Vec2
 		ZERO = self.new(0,0)
 		
@@ -69,7 +73,7 @@ module Rubygame
 		def addEventListener(event, callback=nil, &block)
 			callback = block unless callback
 			if @world and event.is_a?CollisionEvent
-				@world.add_collision_func(event.by, event.to) { |by, to| callback.call(by, to) }
+				@world.add_collision_func(event.by, event.to) { |by, to| callback.call(by.sprite || by, to.sprite || to) }
 			else
 				self[event] = [] unless self.key?event
 				self[event] << callback
@@ -82,7 +86,7 @@ module Rubygame
 
 	class CollisionEvent < Event
 		attr_accessor :by, :to
-		def initialize(by, to)
+		def initialize(by, to=nil)
 			@by = by
 			@to = to
 		end
@@ -157,6 +161,7 @@ module Rubygame
 				moment = CP::moment_for_poly(mass, @rect.vertices, CP::Vec2::ZERO) unless moment
 				body = CP::Body.new(mass, moment)
 				@shape = @rect.shape_for(body)
+				@shape.sprite = self
 				@shape.u = 1.0 # Need some default friction value
 				body.p = CP::Vec2.new(rect.centerx, rect.centery)
 				@going = { :left => 0, :right => 0, :up => 0, :down =>0 }
@@ -206,9 +211,9 @@ module Rubygame
 				end
 			end
 
-			def jump(strength=1000)
+			def jump(v=[0, -1000])
 				if @jumps < 1
-					apply_impulse [0, -strength]
+					apply_impulse v
 					@jumps += 1
 				end
 			end
@@ -231,8 +236,6 @@ module Rubygame
 
 			def update(time)
 				super
-				reset_jumps if velocity.y.abs < 1 # XXX: velocity.y == 0 at the exact peak of a jump. not a huge problem in practice?
-
 				#@image = @image.rotozoom(@shape.body.a, 1)
 				rect.centerx = @shape.body.p.x
 				rect.centery = @shape.body.p.y
@@ -264,6 +267,11 @@ module Rubygame
 					else
 						raise ArgumentError.new("Invalid gravity value type #{v.class}")
 				end
+			end
+			
+			# Get the current gravity
+			def gravity
+				space.gravity
 			end
 
 			# Set the damping/friction across all space
@@ -378,6 +386,11 @@ def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block
 
 	# Include the user code
 	yield screen, background, world, listeners
+
+	# Reset jumps when landing on walls
+	listeners.addEventListener(Rubygame::CollisionEvent.new(:wall)) { |by, to|
+		to.reset_jumps if to.respond_to?:reset_jumps
+	}
 
 	# Refresh the screen once. During the loop, we'll use 'dirty rect' updating
 	# to refresh only the parts of the screen that have changed.
