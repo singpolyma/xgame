@@ -95,6 +95,8 @@ module Rubygame
 
 		def vertices
 			[CP::Vec2::ZERO, CP::Vec2.new(0, height), CP::Vec2.new(width, height), CP::Vec2.new(width, 0)]
+			# Centre of gravity is at 0,0 so the following is more correct, but requires some drawing tweaks
+			# [CP::Vec2.new(width/-2, height/-2), CP::Vec2.new(width/-2, height/2), CP::Vec2.new(width/2, height/2), CP::Vec2.new(width/2, height/-2)]
 		end
 	end # end Rect
 
@@ -300,6 +302,7 @@ module Rubygame
 						raise ArgumentError.new("Invalid side to bound #{side}")
 				end
 				side_shape.collision_type = :wall
+				side_shape.u = 0.1
 				space.add_static_shape side_shape
 			end
 
