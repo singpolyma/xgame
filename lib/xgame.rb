@@ -371,14 +371,19 @@ def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block
 	Rubygame::Surface.autoload_dirs = [ File.dirname($0) ] # XXX: this should include other paths depending on the platform
 
 	# Create a world for sprites to live in
-	world = Rubygame::Sprites::Group.new
-	world.extend(Rubygame::Sprites::UpdateGroup) # The world can undraw and draw its Sprites
-	world.extend(Rubygame::Sprites::DepthSortGroup) # Let them get in front of each other
+	#world = Rubygame::Sprites::Group.new
+	world= ImageSpriteGroup.new
+
+	background=Rubygame::Surface.new(size)
+	world.background=background
+
+	#world.extend(Rubygame::Sprites::UpdateGroup) # The world can undraw and draw its Sprites
+	#world.extend(Rubygame::Sprites::DepthSortGroup) # Let them get in front of each other
 
 	# Grab the screen and create a background
 	screen = Rubygame::Screen.new(size, 0, [Rubygame::HWSURFACE, Rubygame::NOFRAME])
 	screen.title = title # Set the window title
-	background = Rubygame::Surface.new(screen.size)
+	#background = Rubygame::Surface.new(screen.size)
 
 	# This is where event handlers will get stored
 	listeners = Rubygame::ListenerList.new
@@ -391,6 +396,11 @@ def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block
 	listeners.addEventListener(Rubygame::CollisionEvent.new(:wall)) { |by, to|
 		to.reset_jumps if to.respond_to?:reset_jumps
 	}
+
+	#Update the background
+	background=world.background
+
+	background.blit(screen,screen.size)
 
 	# Refresh the screen once. During the loop, we'll use 'dirty rect' updating
 	# to refresh only the parts of the screen that have changed.
@@ -427,3 +437,42 @@ def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block
 	Rubygame.quit()
 
 end #XGame
+
+class ImageSpriteGroup < Rubygame::Sprites::Group
+	attr_accessor :background
+	include Rubygame::Sprites::UpdateGroup
+	include Rubygame::Sprites::DepthSortGroup
+
+	alias :spriteDraw :draw
+	alias :spriteUnDraw :undraw
+
+	def draw(dest)
+		#self.background.blit(dest,[0,0])
+		spriteDraw(dest)
+	end
+
+	def undraw(dest, bg)
+			self.background.blit(dest,[0,0])
+	end
+end
+
+#This mix-in module is for sprites that are in a moving world.
+#Their screen co-ordinates and their world co-ordinates will be different
+module RelativeSprite
+	#This version of draw takes in an offset that represents the position of the world
+	def draw(dest,offset)
+		rect[0]-=offset[0];
+		rect[1]-=offset[1];
+		draw(dest);
+		rect[0]+=offset[0];
+		rect[1]+=offset[1];
+	end
+	#This is the counterpart to the new draw
+	def undraw(dest,background,offset)
+		rect[0]-=offset[0];
+		rect[1]-=offset[1];
+		undraw(dest);
+		rect[0]+=offset[0];
+		rect[1]+=offset[1];
+	end
+end

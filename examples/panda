@@ -10,6 +10,13 @@ XGame('The Panda') { |screen, background, world, listeners|
 	world.bound(screen, [:top, :bottom, :left, :right]) # Keep sprites on the screen
 	world.damping = 0.5 # Set up basic air resistance
 	world.gravity = 100 # Set a gravity constant
+	
+	#Set the background
+	world.background=Rubygame::Surface["xback.png"].zoom_to(screen.size[0],screen.size[1])
+
+	unless world.background
+		puts "PROBLEM WITH IMAGE"
+	end
 
 	# Create a sprite and push it into the world
 	# It's important to have the world set up *before* you do this
