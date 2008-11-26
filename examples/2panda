@@ -3,7 +3,7 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
 
-XGame('Two Pandas!') { |screen, background, world, listeners|
+XGame('Two Pandas!') { |screen, world, listeners|
 
 	class Panda < Rubygame::Sprites::ChipmunkPhysicsSprite
 		def default_image; Rubygame::Surface['panda.png']; end;
@@ -40,6 +40,9 @@ XGame('Two Pandas!') { |screen, background, world, listeners|
 	world.bound(screen, [:top, :bottom, :left, :right]) # Keep sprites on the screen
 	world.damping = 0.5 # Set up basic air resistance
 	world.gravity = 100 # Set a gravity constant
+	
+	#Set the background
+	Rubygame::Surface['xback.png'].zoom_to(screen.width, screen.height).blit(world.background, [0, 0])
 
 	# Instantiate sprites and push them onto the world
 

@@ -66,8 +66,9 @@ module Rubygame
 
 	# This class defines an easy way to manage callbacks
 	class ListenerList < Hash
-		def world=(w)
-			@world = w
+		def initialize(world=nil)
+			super()
+			@world = world
 		end
 
 		def addEventListener(event, callback=nil, &block)
@@ -323,6 +324,24 @@ module Rubygame
 
 		end # ChipmunkPhysicsSpaceGroup
 
+		module BackgroundGroup
+			attr_reader :background
+
+			def initialize(size)
+				super()
+				@background = Rubygame::Surface.new(size)
+			end
+
+			def draw_background_onto(screen)
+				@background.blit(screen, [0, 0])
+				screen.update
+			end
+
+			def undraw(screen)
+				super(screen, @background)
+			end
+		end
+
 	end # module Sprites
 
 	# Default rubygame clock sucks the CPU. We can do better.
@@ -344,12 +363,18 @@ end # module Rubygame
 module XGame
 	# NOTE: Remember to update this in ./configure as well as xgame.gemspec
 	VERSION = [0,1,0] # MAJOR, MINOR, PATCH
+
+	class World < Rubygame::Sprites::Group
+		include Rubygame::Sprites::UpdateGroup # The world can undraw and draw its Sprites
+		include Rubygame::Sprites::DepthSortGroup # Let them get in front of each other
+		include Rubygame::Sprites::BackgroundGroup # Let there be a background
+	end
 end
 
 # This method is the heart of XGame. Call it with a block that sets up your program.
 def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block)
 
-	Rubygame.init() # Set stuff up
+	Rubygame::init # Set stuff up
 
 	if Rubygame::Screen.respond_to?(:get_resolution)
 		size[0] = Rubygame::Screen.get_resolution[0] unless size[0]
@@ -360,64 +385,51 @@ def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block
 	end
 
 	# The events queue gets filled up with all user input into our window
-	events = Rubygame::EventQueue.new()
+	events = Rubygame::EventQueue.new
 	events.ignore = ignore_events # Let's save cycles by ignoring events of some types
 
 	# The clock keeps us from eating the CPU
-	clock = Rubygame::Clock.new()
+	clock = Rubygame::Clock.new
 	clock.target_frametime = frametime # Let's aim to render at some framerate
 
-	# Set up autoloading for Surfaces. Surfaces will be loaded automatically the first time you use Surface["filename"].
+	# Set up autoloading for Surfaces. Surfaces will be loaded automatically the first time you use Rubygame::Surface["filename"].
 	Rubygame::Surface.autoload_dirs = [ File.dirname($0) ] # XXX: this should include other paths depending on the platform
-
-	# Create a world for sprites to live in
-	#world = Rubygame::Sprites::Group.new
-	world= ImageSpriteGroup.new
-
-	background=Rubygame::Surface.new(size)
-	world.background=background
-
-	#world.extend(Rubygame::Sprites::UpdateGroup) # The world can undraw and draw its Sprites
-	#world.extend(Rubygame::Sprites::DepthSortGroup) # Let them get in front of each other
 
 	# Grab the screen and create a background
 	screen = Rubygame::Screen.new(size, 0, [Rubygame::HWSURFACE, Rubygame::NOFRAME])
 	screen.title = title # Set the window title
-	#background = Rubygame::Surface.new(screen.size)
-
+	
+	# Create a world for sprites to live in
+	world = XGame::World.new(screen.size)
+	
 	# This is where event handlers will get stored
-	listeners = Rubygame::ListenerList.new
-	listeners.world = world
+	listeners = Rubygame::ListenerList.new(world)
 
 	# Include the user code
-	yield screen, background, world, listeners
+	yield screen, world, listeners
 
 	# Reset jumps when landing on walls
 	listeners.addEventListener(Rubygame::CollisionEvent.new(:wall)) { |by, to|
 		to.reset_jumps if to.respond_to?:reset_jumps
 	}
 
-	#Update the background
-	background=world.background
-
-	background.blit(screen,screen.size)
-
-	# Refresh the screen once. During the loop, we'll use 'dirty rect' updating
+	# Draw background and Refresh the screen once.
+	# During the loop, we'll use 'dirty rect' updating
 	# to refresh only the parts of the screen that have changed.
-	screen.update()
+	world.draw_background_onto screen
 
 	catch(:quit) do
 		loop do
 
-			world.undraw(screen, background)
+			world.undraw screen
 
-			events.push Rubygame::LoopEvent.new
+			events << Rubygame::LoopEvent.new
 			events.each do |event|
 				case event
 				when Rubygame::ActiveEvent
 					# ActiveEvent appears when the window gains or loses focus.
 					# This helps to ensure everything is refreshed after the Rubygame window has been covered up by a different window.
-					screen.update()
+					screen.update
 				when Rubygame::QuitEvent
 					# QuitEvent appears when the user closes the window, or otherwise signals they wish to quit
 					throw :quit
@@ -434,45 +446,6 @@ def XGame(title = 'XGame', size = [], frametime = 15, ignore_events = [], &block
 	end
 
 	puts "#{title} is Quitting!"
-	Rubygame.quit()
+	Rubygame.quit
 
 end #XGame
-
-class ImageSpriteGroup < Rubygame::Sprites::Group
-	attr_accessor :background
-	include Rubygame::Sprites::UpdateGroup
-	include Rubygame::Sprites::DepthSortGroup
-
-	alias :spriteDraw :draw
-	alias :spriteUnDraw :undraw
-
-	def draw(dest)
-		#self.background.blit(dest,[0,0])
-		spriteDraw(dest)
-	end
-
-	def undraw(dest, bg)
-			self.background.blit(dest,[0,0])
-	end
-end
-
-#This mix-in module is for sprites that are in a moving world.
-#Their screen co-ordinates and their world co-ordinates will be different
-module RelativeSprite
-	#This version of draw takes in an offset that represents the position of the world
-	def draw(dest,offset)
-		rect[0]-=offset[0];
-		rect[1]-=offset[1];
-		draw(dest);
-		rect[0]+=offset[0];
-		rect[1]+=offset[1];
-	end
-	#This is the counterpart to the new draw
-	def undraw(dest,background,offset)
-		rect[0]-=offset[0];
-		rect[1]-=offset[1];
-		undraw(dest);
-		rect[0]+=offset[0];
-		rect[1]+=offset[1];
-	end
-end

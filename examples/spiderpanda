@@ -3,7 +3,7 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
 
-XGame('Spider Panda') { |screen, background, world, listeners|
+XGame('Spider Panda') { |screen, world, listeners|
 
 	class Panda < Rubygame::Sprites::ChipmunkPhysicsSprite
 
