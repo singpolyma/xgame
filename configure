@@ -132,7 +132,8 @@ if [ "." != "$GEM." ]; then
 		GEMINSTALL="$GEM install xgame-$VERSION.gem"
 	else
 		#GEMINSTALL="cp xgame-$VERSION.gem '\$(prefix)/$INSTALLDIR/xgame.gem'"
-		GEMINSTALL="mkdir -p '\$(prefix)/../tmp/'; cp xgame-$VERSION.gem '\$(prefix)/../tmp/xgame.gem'" # XXX: This assumes prefix is only one level deeper than we want... hmm...
+		#GEMINSTALL="mkdir -p '\$(prefix)/../tmp/'; cp xgame-$VERSION.gem '\$(prefix)/../tmp/xgame.gem'" # XXX: This assumes prefix is only one level deeper than we want... hmm...
+		GEMINSTALL=""
 	fi
 fi
 

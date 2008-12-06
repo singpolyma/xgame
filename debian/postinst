@@ -20,10 +20,10 @@ set -e
 
 case "$1" in
     configure)
-		GEM=`which gem`
-		if [ "." != "$GEM." ]; then
-			$GEM install /tmp/xgame.gem
-		fi
+#		GEM=`which gem`
+#		if [ "." != "$GEM." ]; then
+#			$GEM install /tmp/xgame.gem
+#		fi
     ;;
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;
