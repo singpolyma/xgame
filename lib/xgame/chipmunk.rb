@@ -74,7 +74,7 @@ module Rubygame
 			end
 
 			# Go in some direction [vx, vy]. If either is nil, motion on that axis will not be affected.
-			def go(v)
+			def go(v, unrealism=1)
 				if v[0]
 					@going[:left] = v[0]*-1	if v[0] <= 0
 					@going[:right] = v[0] if v[0] >= 0
@@ -83,6 +83,7 @@ module Rubygame
 					@going[:up] = v[1]*-1 if v[1] <= 0
 					@going[:down] = v[1] if v[1] >= 0
 				end
+				apply_impulse(CP::Vec2.new(v[0].to_i, v[1].to_i) * unrealism) if @jumps > 0
 				@shape.surface_v = CP::Vec2.new(@going[:left] + @going[:right]*-1, @going[:up] + @going[:down]*-1)
 			end
 
