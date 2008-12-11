@@ -1,8 +1,11 @@
 Run `git grep -e TODO: -e XXX: -e FIXME:` to see notes about cleanup in the source.
 
+Items sorted by loose priority under the different sub-projects.
+Items ending in ? need more thought / discussion.
+
 == Roadmap ==
 
-== General ==
+=== General ===
 
 * Pick names for company and products.  XGame is kind of random, and while good on Google, all related domains are taken.
 * Get domain and website
@@ -11,28 +14,26 @@ Run `git grep -e TODO: -e XXX: -e FIXME:` to see notes about cleanup in the sour
 
 === For library ===
 
-* Scrollable background (psycotica0 working on this?)
-* EventListeners needs to wrap the new event stuff in rubygame2.4 -- the rubygame stuff is ugly raw though (Low priority until rubygame2.4 is official)
-* Music/SFX wrapper/demo/tests?
+* Scrollable background (psycotica0 is working on this)
 * Board game-style demo + other demos
 * Continue to improve self-documentation of code and RDoc
+* EventListeners needs to wrap the new event stuff in rubygame2.4 -- the rubygame stuff is ugly raw though (Low priority until rubygame2.4 is official)
+* Music/SFX wrapper/demo/tests?
 
 * Python port
-* DOMScripting (aka JavaScript) port
 * C port
-* C++ port
+* DOMScripting (aka JavaScript) port?
+* C++ port?
 * Java port?
 
-== For packager ==
+== For market ==
 
-* Package Rubygame, Chipmunk, XGame, and demos as *.deb and *.rpm i386, AMD64, PPC, x86 for Windows, and source
-** Include the two extension files as defined at <http://github.com/singpolyma/xgame/wikis/package-file-extensions>
-* Set up an APT repository somewhere
+* Package Rubygame, Chipmunk, XGame, and demos as *.deb and *.rpm i386, AMD64, PPC, x86 for Windows, and source (singpolyma working on this)
+** Investigate/rethink extensions
+* Set up an APT repository somewhere (on csclub, done. Need to investigate SHA1, SHA256?, also, per-deb PGP?)
 ** Set up MD5, SHA1, SHA256, and GPG verification
-* Test with apt-get
-* Write prototype script to install from *.deb, *.rpm, or APT repo (with OAuth support for APT)
+* Write prototype script to install from *.deb, *.rpm, or APT repo (with OAuth support for APT) (singpolyma working on this)
 ** Test security (only authorized accounts download certain packages)
-* Set up gratis and non-gratis repos
 ** Test end-to-end installing a "purchased" game with gratis dependencies
 * Get nice installer environment and GUI in C and Tk
 
