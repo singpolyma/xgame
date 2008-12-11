@@ -66,16 +66,16 @@ XGame('Spider Panda') { |screen, world, listeners|
 				when Rubygame::K_ESCAPE
 					throw :quit #quit when the user hits escape
 				when Rubygame::K_RIGHT
-					panda.jump(world.gravity * -10) if world.gravity.x == -100
+					panda.jump(world.gravity * -7) if world.gravity.x == -100
 					panda.go([50,nil])
 				when Rubygame::K_LEFT
-					panda.jump(world.gravity * -10) if world.gravity.x == 100
+					panda.jump(world.gravity * -7) if world.gravity.x == 100
 					panda.go([-50,nil])
 				when Rubygame::K_UP
-					panda.jump(world.gravity * -10) if world.gravity.y == 100
+					panda.jump(world.gravity * -7) if world.gravity.y == 100
 					panda.go([nil,-50])
 				when Rubygame::K_DOWN
-					panda.jump(world.gravity * -10) if world.gravity.y == -100
+					panda.jump(world.gravity * -7) if world.gravity.y == -100
 					panda.go([nil,50])
 			end
 	}

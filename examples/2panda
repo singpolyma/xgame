@@ -66,13 +66,13 @@ XGame('Two Pandas!') { |screen, world, listeners|
 				when Rubygame::K_LEFT
 					panda.go([-30,nil])
 				when Rubygame::K_UP
-					panda.jump
+					panda.jump(world.gravity * -8)
 				when Rubygame::K_D
 					panda2.go([30,nil])
 				when Rubygame::K_A
 					panda2.go([-30,nil])
 				when Rubygame::K_W # This does not work right on my Dvorak keyboard. GNOME shift+shift is not respected. Needs configurable.
-					panda2.jump
+					panda2.jump(world.gravity * -8)
 			end
 	}
 

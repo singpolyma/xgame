@@ -32,7 +32,7 @@ XGame('The Panda') { |screen, world, listeners|
 				when Rubygame::K_LEFT
 					panda.go([-30,nil])
 				when Rubygame::K_UP
-					panda.jump
+					panda.jump(world.gravity * -7)
 			end
 	}
 

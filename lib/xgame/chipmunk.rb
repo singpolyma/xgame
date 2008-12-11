@@ -104,9 +104,9 @@ module Rubygame
 				end
 			end
 
-			def jump(v=[0, -1000])
+			def jump(v, unrealism=3)
 				if @jumps < 1
-					apply_impulse v
+					apply_impulse v + (velocity * unrealism)
 					@jumps += 1
 				end
 			end
