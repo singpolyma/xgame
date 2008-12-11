@@ -2,6 +2,7 @@
 
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
+require 'xgame/chipmunk'
 
 XGame('Spider Panda') { |screen, world, listeners|
 

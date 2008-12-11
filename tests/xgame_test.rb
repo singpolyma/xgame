@@ -3,6 +3,7 @@
 # Test that it loads
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
 require 'xgame'
+require 'xgame/chipmunk'
 
 puts 'XGame loaded'
 
