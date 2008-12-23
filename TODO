@@ -7,7 +7,7 @@ Items ending in ? need more thought / discussion.
 
 === General ===
 
-* Pick names for company and products.  XGame is kind of random, and while good on Google, all related domains are taken.
+* Name has been tentatively selected.
 * Get domain and website
 * Get people to test stuff as more of it becomes available
 * Run contests to get people interested in developing for the platform?
@@ -29,7 +29,7 @@ Items ending in ? need more thought / discussion.
 == For market ==
 
 * Package Rubygame, Chipmunk, XGame, and demos as *.deb and *.rpm i386, AMD64, PPC, x86 for Windows, and source (singpolyma working on this)
-** Investigate/rethink extensions
+** Investigate/rethink package format extensions
 * Set up an APT repository somewhere (on csclub, done. Need to investigate SHA1, SHA256?, also, per-deb PGP?)
 ** Set up MD5, SHA1, SHA256, and GPG verification
 * Write prototype script to install from *.deb, *.rpm, or APT repo (with OAuth support for APT) (singpolyma working on this)
