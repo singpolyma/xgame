@@ -20,6 +20,36 @@ XGame('The Panda',[640,480]) { |screen, world, listeners|
 		end
 	end
 
+	class Star < Rubygame::Sprites::ImageSprite
+		attr_accessor :above
+		attr_accessor :below
+		attr_accessor :toleft
+		attr_accessor :toright
+		attr_accessor :owner
+	end
+
+	def check_stars(astar, world)
+		world.each do |star|
+			next if star == astar
+			next if star.owner == astar.owner
+			if astar.collide_sprite?star
+				astar.kill
+				break
+			end
+			# Vertically alined
+			if (star.rect.x - astar.rect.x).abs < 15
+				star.above = true if star.rect.y > astar.rect.y # astar is above star
+				star.below = true if star.rect.y < astar.rect.y # astar is below star
+			end
+			# Horiontally alined
+			if (star.rect.x - astar.rect.y).abs < 15
+				star.toright = true if star.rect.x > astar.rect.x # astar is to right of star
+				star.toleft = true if star.rect.x < astar.rect.x # astar is left of star
+			end
+			star.kill if (star.above && star.below) || (star.toleft && star.toright)
+		end
+	end
+
 	players = Players.new(2)
 	puts "Player ##{players.player}'s turn."
 
@@ -34,12 +64,15 @@ XGame('The Panda',[640,480]) { |screen, world, listeners|
 
 	listeners.addEventListener(Rubygame::MouseDownEvent) { |event|
 		if event.button == 1
-			star = Rubygame::Sprites::ImageSprite.new(event.pos[0], event.pos[1], "star#{players.player}.png")
+			star = Star.new(event.pos[0]-16, event.pos[1]-16, "star#{players.player}.png")
+			star.owner = players.player
 			world.push star
+			check_stars star, world
+
+			sleep 0.2 # Keep player from accidentally going twice
 			players.succ
+			puts "Player ##{players.player}'s turn."
 		end
-		sleep 0.2 # Keep player from accidentally going twice
-		puts "Player ##{players.player}'s turn."
 	}
 
 }
