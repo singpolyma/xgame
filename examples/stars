@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.dirname(__FILE__) + '/../lib/'
+require 'xgame'
+
+XGame('The Panda',[640,480]) { |screen, world, listeners|
+
+	class Players
+		def initialize(count)
+			raise "Players: count must be 1 or higher" if count < 1
+			@count = count
+			@player = 1
+		end
+		attr_reader :player
+		def succ
+			@player += 1
+			if @player > @count
+				@player = 1
+			end
+		end
+	end
+
+	players = Players.new(2)
+	puts "Player ##{players.player}'s turn."
+
+	# Set up event listeners
+
+	listeners.addEventListener(Rubygame::KeyDownEvent) { |event|
+			case event.key
+				when Rubygame::K_ESCAPE
+					throw :quit #quit when the user hits escape
+			end
+	}
+
+	listeners.addEventListener(Rubygame::MouseDownEvent) { |event|
+		if event.button == 1
+			star = Rubygame::Sprites::ImageSprite.new(event.pos[0], event.pos[1], "star#{players.player}.png")
+			world.push star
+			players.succ
+		end
+		sleep 0.2 # Keep player from accidentally going twice
+		puts "Player ##{players.player}'s turn."
+	}
+
+}
