@@ -50,7 +50,7 @@ module Rubygame
 
 		def addEventListener(event, callback=nil, &block)
 			callback = block unless callback
-			if @world and event.is_a?CollisionEvent
+			if @world and @world.respond_to?:add_collision_func and event.is_a?CollisionEvent
 				@world.add_collision_func(event.by, event.to) { |by, to| callback.call(by.sprite || by, to.sprite || to) }
 			else
 				self[event] = [] unless self.key?event
