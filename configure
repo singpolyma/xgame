@@ -22,7 +22,7 @@ VERSION="0.1.0" # NOTE: Remember to update in XGame::VERSION as well, and xgame.
 
 # Verify presence of ruby
 RUBY=`which ruby` # XXX: we're assuming which is in PATH
-if [ "." = "$RUBY." ]; then
+if [ $? -ne 0 ]; then
 	echo "ERROR: ruby not found" 1>&2
 	exit 1
 else
@@ -30,8 +30,8 @@ else
 fi
 
 # Verify ruby version
-RUBYMAJOR=`$RUBY -v | cut -d' ' -f2 | cut -b1`
-RUBYMINOR=`$RUBY -v | cut -d' ' -f2 | cut -b3`
+RUBYMAJOR=`"$RUBY" -v | cut -d' ' -f2 | cut -b1`
+RUBYMINOR=`"$RUBY" -v | cut -d' ' -f2 | cut -b3`
 if [ $RUBYMAJOR -lt 1 -o $RUBYMINOR -lt 8 ]; then
 	echo "ERROR: ruby version $RUBYMAJOR.$RUBYMINOR.x too low, need at least 1.8.0" 1>&2
 	exit 1
@@ -40,7 +40,7 @@ else
 fi
 
 # Verify RubyGame and version
-$RUBY <<EOT
+"$RUBY" <<EOT
 begin
 	begin
 		require 'rubygame'
@@ -67,7 +67,7 @@ if [ $? != 0 ]; then
 fi
 
 # Verify Chipmunk and version
-$RUBY <<EOT
+"$RUBY" <<EOT
 begin
 	begin
 		require 'chipmunk'
@@ -95,12 +95,12 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-XGAME=`$RUBY -c lib/xgame.rb | grep "Syntax OK"`
+XGAME=`"$RUBY" -c lib/xgame.rb | grep "Syntax OK"`
 if [ "." = "$XGAME." ]; then
 	echo "ERROR: XGame source tree corrupted" 1>&2
 	exit 1
 else
-	$RUBY <<EOT
+	"$RUBY" <<EOT
 require 'lib/xgame'
 if XGame::VERSION.join('.') == '$VERSION'
 	puts "XGame $VERSION present"
@@ -116,9 +116,9 @@ EOT
 fi
 
 if [ "$PREFIX." = "." -o "$PREFIX" = "/usr/local" ]; then
-	INSTALLDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir'].sub(Regexp.new('^$PREFIX\/?'),'')" | $RUBY`
+	INSTALLDIR=`echo "require 'rbconfig'; puts Config::CONFIG['sitedir'].sub(Regexp.new('^$PREFIX\/?'),'')" | "$RUBY"`
 else
-	INSTALLDIR=`echo "require 'rbconfig'; puts Config::CONFIG['rubylibdir'].sub(Regexp.new('^$PREFIX\/?'),'')" | $RUBY`
+	INSTALLDIR=`echo "require 'rbconfig'; puts Config::CONFIG['rubylibdir'].sub(Regexp.new('^$PREFIX\/?'),'')" | "$RUBY"`
 fi
 
 GEMBUILD=""
@@ -140,7 +140,7 @@ fi
 cat 1>Makefile <<EOT
 prefix=$PREFIX
 all: gem lib/xgame.rb
-	$RUBY -c "lib/xgame.rb"
+	"$RUBY" -c "lib/xgame.rb"
 xgame-$VERSION.gem: xgame.gemspec
 	$GEMBUILD
 gem: xgame-$VERSION.gem
