@@ -2,10 +2,10 @@
 
 # Parse options
 while [ $# -gt 0 ]; do
-	optarg=`expr "x$1" : 'x[^=]*=\(.*\)'`
+	optarg="`expr "x$1" : 'x[^=]*=\(.*\)'`"
 	case "$1" in
 		--prefix=*)
-			PREFIX=$optarg
+			PREFIX="$optarg"
 			shift
 		;;
 		--packaging)
