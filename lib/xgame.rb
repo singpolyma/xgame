@@ -7,7 +7,6 @@ begin
 	# If we are operating without rubygems (preferred) some features are still nice
 	# define the Gem class to keep a standard API
 	module Gem
-		@@user_home = '/'
 		def self.user_home
 			@@user_home ||= find_home
 		end
