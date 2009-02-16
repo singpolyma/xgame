@@ -2,12 +2,12 @@ Source: libxgame-ruby
 Section: libs
 Priority: extra
 Maintainer: Stephen Paul Weber <singpolyma@singpolyma.net>
-Build-Depends: debhelper (>= 5), ruby (>= 1.8.0)
+Build-Depends: debhelper (>= 5), ruby
 Standards-Version: 3.7.2
 Homepage: http://github.com/singpolyma/xgame
 
 Package: libxgame-ruby
 Architecture: all
-Depends: ruby (>= 1.8.0), librubygame (>=1.3.0), libchipmunk-ruby (>= 4.0.0), ${shlibs:Depends}, ${misc:Depends}
+Depends: librubygame (>=1.3.0), libchipmunk-ruby (>= 4.0.0), ${shlibs:Depends}, ${misc:Depends}
 Description: High-level game framework based on rubygame.
  This is the ruby version of the library.
