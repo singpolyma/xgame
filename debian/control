@@ -8,6 +8,6 @@ Homepage: http://github.com/singpolyma/xgame
 
 Package: libxgame-ruby
 Architecture: all
-Depends: librubygame (>=1.3.0), libchipmunk-ruby (>= 4.0.0), ${shlibs:Depends}, ${misc:Depends}
+Depends: librubygame (>= 1.3.0), libchipmunk-ruby (>= 4.0.0), ${shlibs:Depends}, ${misc:Depends}
 Description: High-level game framework based on rubygame.
  This is the ruby version of the library.
