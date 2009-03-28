@@ -1,19 +1,5 @@
 Run `git grep -e TODO: -e XXX: -e FIXME:` to see notes about cleanup in the source.
 
-Items sorted by loose priority under the different sub-projects.
-Items ending in ? need more thought / discussion.
-
-== Roadmap ==
-
-=== General ===
-
-* Name has been tentatively selected.
-* Get domain and website
-* Get people to test stuff as more of it becomes available
-* Run contests to get people interested in developing for the platform?
-
-=== For library ===
-
 * Scrollable background (psycotica0 is working on this)
 * Board game-style demo + other demos
 * Continue to improve self-documentation of code and RDoc
@@ -25,26 +11,3 @@ Items ending in ? need more thought / discussion.
 * DOMScripting (aka JavaScript) port?
 * C++ port?
 * Java port?
-
-== For market ==
-
-* Package Rubygame, Chipmunk, XGame, and demos as *.deb and *.rpm i386, AMD64, PPC, x86 for Windows, and source (singpolyma working on this)
-** Investigate/rethink package format extensions
-* Set up an APT repository somewhere (on csclub, done. Need to investigate SHA1, SHA256?, also, per-deb PGP?)
-** Set up MD5, SHA1, SHA256, and GPG verification
-* Write prototype script to install from *.deb, *.rpm, or APT repo (with OAuth support for APT) (singpolyma working on this)
-** Test security (only authorized accounts download certain packages)
-** Test end-to-end installing a "purchased" game with gratis dependencies
-* Get nice installer environment and GUI in C and Tk
-
-== For editor ==
-
-* Prototype editor
-** User can add sprites
-** User can move sprites around
-** User can assign mass, and bind basic controls right from GUI
-** User can set backgrounds, air resistance, and gravity
-** Provide basic default behaviours (moving platforms)
-** Allow binding and storage of arbitrary code in the target language
-* Decide on output/storage format (may not want to store as code, parsing is hard)
-* Get nice installer and GUI in C and Tk
