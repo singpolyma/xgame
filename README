@@ -15,13 +15,3 @@ To install XGame on your system, just run the traditional:
 	./configure
 	make
 	sudo make install
-
-== Long Term ==
-
-For those that are curious or poking around, XGame is part of a longer vision by singpolyma and psycotica0 
-to start a company that does game development and distribution.  Our vision is to help other developers 
-create and distribute / sell games to a market they might not othewise be able to reach.
-
-While the code is this repo is subject to the COPYING file, we would also ask that the community abide by 
-the spirit of FrieNDA while we get our product ready for launch.  Everyone will benefit once the network 
-is up and able to be used by developers to distribute their games.
